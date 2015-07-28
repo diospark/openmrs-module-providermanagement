@@ -4,9 +4,319 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
-    <!--
-        See http://www.liquibase.org/manual/home#available_database_refactorings
-        for a list of supported elements and attributes
-    -->
+    <changeSet id="create_table_providermanagement_provider_role" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_provider_role"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_provider_role">
+
+            <column name="provider_role_id" type="int(11)" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="description" type="varchar(1000)"></column>
+
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="date_created" type="datetime" defaultValue="0000-00-00 00:00:00">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="changed_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_changed" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retired" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="retired_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_retired" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retire_reason" type="varchar(255)" defaultValue="NULL"></column>
+
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="alter_table_provider" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="provider"></tableExists>
+        </preConditions>
+        <addColumn tableName="provider">
+            <column name="provider_role_id" type="int(11)"></column>
+        </addColumn>
+        <createIndex tableName="provider" indexName="provider_role_id_index">
+            <column name="provider_role_id"></column>
+        </createIndex>
+        <addForeignKeyConstraint baseTableName="provider" baseColumnNames="provider_role_id" constraintName="provider_provider_role_id_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+    </changeSet>
+
+    <changeSet id="create_table_relationship_type" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_provider_role_relationship_type"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_provider_role_relationship_type">
+
+            <column name="provider_role_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="relationship_type_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="providermanagement_provider_role_relationship_type" indexName="providermanagement_provider_role_relationship_type_provider_role_id">
+            <column name="provider_role_id"></column>
+        </createIndex>
+
+        <createIndex tableName="providermanagement_provider_role_relationship_type" indexName="providermanagement_provider_role_relationship_type_relationship_type_id">
+            <column name="relationship_type_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_relationship_type" baseColumnNames="provider_role_id" constraintName="providermanagement_provider_role_relationship_type_provider_role_id_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_relationship_type" baseColumnNames="relationship_type_id" constraintName="providermanagement_provider_role_relationship_type_relationship_type_id_fk" referencedTableName="relationship_type"
+                                 referencedColumnNames="relationship_type_id"></addForeignKeyConstraint>
+    </changeSet>
+
+    <changeSet id="create_table_supervisee" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_provider_role_supervisee_provider_role"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_provider_role_supervisee_provider_role">
+
+            <column name="provider_role_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="supervisee_provider_role_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="providermanagement_provider_role_supervisee_provider_role" indexName="providermanagement_provider_role_supervisee_provider_role_provider_role_id_index">
+            <column name="provider_role_id"></column>
+        </createIndex>
+
+        <createIndex tableName="providermanagement_provider_role_supervisee_provider_role" indexName="providermanagement_provider_role_supervisee_provider_role_supervisee_provider_role_id_index">
+            <column name="supervisee_provider_role_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_supervisee_provider_role" baseColumnNames="provider_role_id" constraintName="providermanagement_prspr_provider_role_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_supervisee_provider_role" baseColumnNames="supervisee_provider_role_id" constraintName="providermanagement_prspr_supervisee_role_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+
+    </changeSet>
+
+    <changeSet id="creeate_table_attribute_type" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_provider_role_provider_attribute_type"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_provider_role_provider_attribute_type">
+
+            <column name="provider_role_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="provider_attribute_type_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="providermanagement_provider_role_provider_attribute_type" indexName="provider_role_id_index">
+            <column name="provider_role_id"></column>
+        </createIndex>
+
+        <createIndex tableName="providermanagement_provider_role_provider_attribute_type" indexName="provider_attribute_type_id_index">
+            <column name="provider_attribute_type_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="" constraintName="providermanagement_prpat_provider_role_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="" constraintName="providermanagement_prpat_provider_attribute_type_fk" referencedTableName="provider_attribute_type"
+                                 referencedColumnNames="provider_attribute_type_id"></addForeignKeyConstraint>
+
+    </changeSet>
+    
+    <changeSet id="create_table_providermanagement_provider_suggestion" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_provider_suggestion"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_provider_suggestion">
+
+            <column name="provider_suggestion_id" type="int(11)" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
+
+            <column name="criteria" type="varchar(5000)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="evaluator" type="varchar(255)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="relationship_type_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="description" type="varchar(100)"></column>
+
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="date_created" type="datetime" defaultValue="0000-00-00 00:00:00">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="changed_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_changed" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retired" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="retired_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_retired" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retire_reason" type="varchar(255)" defaultValue="NULL"></column>
+
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="providermanagement_provider_suggestion" indexName="relationship_type_id">
+            <column name="relationship_type_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_suggestion" baseColumnNames="relationship_type_id" constraintName="relationship_type_id_fk" referencedTableName="relationship_type"
+                                 referencedColumnNames="relationship_type_id"></addForeignKeyConstraint>
+    </changeSet>
+
+    <changeSet id="create_table_providermanagement_supervision_suggestion" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="providermanagement_supervision_suggestion"></tableExists>
+            </not>
+        </preConditions>
+        <createTable tableName="providermanagement_supervision_suggestion">
+
+            <column name="supervision_suggestion_id" type="int(11)" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
+
+            <column name="criteria" type="varchar(5000)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="evaluator" type="varchar(255)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="provider_role_id" type="int(11)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="suggestion_type" type="varchar(50)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="description" type="varchar(100)"></column>
+
+            <column name="creator" type="int(11)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="date_created" type="datetime" defaultValue="0000-00-00 00:00:00">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="changed_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_changed" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retired" type="tinyint(1)" defaultValue="0">
+                <constraints nullable="false"></constraints>
+            </column>
+
+            <column name="retired_by" type="int(11)" defaultValue="NULL"></column>
+
+            <column name="date_retired" type="datetime" defaultValue="NULL"></column>
+
+            <column name="retire_reason" type="varchar(255)" defaultValue="NULL"></column>
+
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false"></constraints>
+            </column>
+
+        </createTable>
+
+        <createIndex tableName="providermanagement_supervision_suggestion" indexName="provider_role_id_supervision_suggestion_index">
+            <column name="provider_role_id"></column>
+        </createIndex>
+
+        <addForeignKeyConstraint baseTableName="providermanagement_supervision_suggestion" baseColumnNames="provider_role_id" constraintName="provider_role_id_supervision_suggestion_fk" referencedTableName="providermanagement_provider_role"
+                                 referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
+
+    </changeSet>
+
+    <changeSet id="insert_data" author="Dmytro Trifonov">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="relationship_type"></tableExists>
+        </preConditions>
+        <insert tableName="relationship_type">
+            <column name="a_is_to_b" value="Supervisor"></column>
+            <column name="b_is_to_a" value="Supervisee"></column>
+            <column name="preferred" value="0"></column>
+            <column name="weight" value="0"></column>
+            <column name="description" value="Provider supervisor to provider supervisee relationship"></column>
+            <column name="creator" value="1"></column>
+            <column name="date_created" value="1970-01-01 00:00:00"></column>
+            <column name="uuid" value="2a5f4ff4-a179-4b8a-aa4c-40f71956ebbc"></column>
+        </insert>
+    </changeSet>
     
 </databaseChangeLog>
