@@ -116,7 +116,7 @@
 
         </createTable>
 
-        <createIndex tableName="providermanagement_provider_role_supervisee_provider_role" indexName="providermanagement_provider_role_supervisee_provider_role_provider_role_id_index">
+        <createIndex tableName="providermanagement_provider_role_supervisee_provider_role" indexName="providermanagement_provider_role_supervisee_provider_role_provider_role_id_supervisee_index">
             <column name="provider_role_id"></column>
         </createIndex>
 
@@ -150,7 +150,7 @@
 
         </createTable>
 
-        <createIndex tableName="providermanagement_provider_role_provider_attribute_type" indexName="provider_role_id_index">
+        <createIndex tableName="providermanagement_provider_role_provider_attribute_type" indexName="provider_role_id_attribute_type_index">
             <column name="provider_role_id"></column>
         </createIndex>
 
@@ -158,10 +158,10 @@
             <column name="provider_attribute_type_id"></column>
         </createIndex>
 
-        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="" constraintName="providermanagement_prpat_provider_role_fk" referencedTableName="providermanagement_provider_role"
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="provider_role_id" constraintName="providermanagement_prpat_provider_role_fk" referencedTableName="providermanagement_provider_role"
                                  referencedColumnNames="provider_role_id"></addForeignKeyConstraint>
 
-        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="" constraintName="providermanagement_prpat_provider_attribute_type_fk" referencedTableName="provider_attribute_type"
+        <addForeignKeyConstraint baseTableName="providermanagement_provider_role_provider_attribute_type" baseColumnNames="provider_attribute_type_id" constraintName="providermanagement_prpat_provider_attribute_type_fk" referencedTableName="provider_attribute_type"
                                  referencedColumnNames="provider_attribute_type_id"></addForeignKeyConstraint>
 
     </changeSet>
